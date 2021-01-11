@@ -14,7 +14,18 @@ class ProducerController extends Controller
      */
     public function index()
     {
-        return Producer::orderBy('created_at', 'DESC')->get();
+        return Producer::all();
+    }
+
+    public function getProducerAll(Request $request)
+    {
+        return Producer::orderby('created_at', 'DESC')->get();
+    }
+
+    public function getProducer(Request $request, $id)
+    {
+        $producer = Producer::where('producer_id', $id)->first();
+        return response()->json($producer);
     }
 
     /**
@@ -45,10 +56,9 @@ class ProducerController extends Controller
      * @param  \App\Models\Producer  $producer
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Producer $producer)
     {
-        $producer = Producer::where('producer_id', $id)->first();
-        return response()->json($producer);
+        //
     }
 
     /**
@@ -72,9 +82,11 @@ class ProducerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $producer = Producer::find($id);
-        $producers = $producer->update($request->all());
-        return response()->json($producers);
+        if ($request->ajax()) {
+            $producer = Producer::find($id);
+            $producers = $producer->update($request->all());
+            return response()->json($producers);
+        }
     }
 
     /**
@@ -87,6 +99,6 @@ class ProducerController extends Controller
     {
         $producer = Producer::findOrFail($id);
         $producer->delete();
-        return response()->json($producer, 200);
+        return response()->json(['data'=>$producer, 'status'=>200]);
     }
 }

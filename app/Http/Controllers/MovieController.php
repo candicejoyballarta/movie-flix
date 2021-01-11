@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MovieController extends Controller
 {
@@ -14,7 +15,21 @@ class MovieController extends Controller
      */
     public function index()
     {
-        return Movie::orderBy('created_at', 'DESC')->get();
+        return Movie::all();
+    }
+
+    public function getMovieAll(Request $request){
+        //if ($request->ajax()){
+            $movies = Movie::orderBy('created_at', 'DESC')->get();
+            return response()->json($movies);
+        //}
+    }
+
+    public function getMovie(Request $request, $id){
+        if ($request->ajax()) {
+            $movie = Movie::where('movie_id',$id)->first();
+            return response()->json($movie);
+        }
     }
 
     /**
@@ -36,8 +51,12 @@ class MovieController extends Controller
     public function store(Request $request)
     {
         $movie = Movie::create($request->all());
-        return response()->json($movie);
 
+        foreach ($request->genre_id as $genre_id) {
+            DB::insert('insert into genre_movie (genre_id, movie_id) values (?, ?)', [$genre_id, $movie->movie_id]);
+        }
+
+        return response()->json($movie);
     }
 
     /**
@@ -46,11 +65,9 @@ class MovieController extends Controller
      * @param  \App\Models\Movie  $movie
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Movie $movie)
     {
-        $movie = Movie::where('movie_id', $id)->first();
-        return response()->json($movie);
-
+        //
     }
 
     /**
@@ -61,7 +78,7 @@ class MovieController extends Controller
      */
     public function edit($id)
     {
-        $movie = Movie::find($id);
+        $movie = Movie::with('genres')->find($id);
         return response()->json($movie);
     }
 
@@ -74,10 +91,10 @@ class MovieController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $movie = Movie::find($id);
-        $movies = $movie->update($request->all());
-        return response()->json($movies);
-
+        //if ($request->ajax()) {
+            $movie = Movie::find($id)->update($request->all());
+            return response()->json($movie);
+        //}
     }
 
     /**
@@ -90,7 +107,6 @@ class MovieController extends Controller
     {
         $movie = Movie::findOrFail($id);
         $movie->delete();
-        return response()->json($movie);
-
+        return response()->json(['success'=>"movie deleted successfully",'data'=>$movie,'status'=>200]);
     }
 }

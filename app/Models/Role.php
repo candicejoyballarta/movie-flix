@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Role extends Model
 {
     use HasFactory;
-    protected $fillable = ['role_name'];
+    protected $fillable = ['role_name', 'movie_id', 'actor_id'];
     protected $primaryKey = 'role_id';
 
     public function actors()

@@ -1,5 +1,6 @@
 {
     "private": true,
+    "type": "module",
     "scripts": {
         "dev": "npm run development",
         "development": "mix",
@@ -11,8 +12,34 @@
     },
     "devDependencies": {
         "axios": "^0.21",
+        "eslint": "^7.2.0",
+        "eslint-config-airbnb-base": "^14.2.1",
+        "eslint-config-node": "^4.1.0",
+        "eslint-config-prettier": "^7.1.0",
+        "eslint-plugin-import": "^2.22.1",
+        "eslint-plugin-node": "^11.1.0",
+        "eslint-plugin-prettier": "^3.3.1",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
-        "postcss": "^8.1.14"
-    }
+        "postcss": "^8.1.14",
+        "prettier": "^2.2.1"
+    },
+    "name": "movie-flix",
+    "description": "<p align=\"center\"><a href=\"https://laravel.com\" target=\"_blank\"><img src=\"https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg\" width=\"400\"></a></p>",
+    "version": "1.0.0",
+    "main": "webpack.mix.js",
+    "directories": {
+        "test": "tests"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/candicejoyballarta/movie-flix.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/candicejoyballarta/movie-flix/issues"
+    },
+    "homepage": "https://github.com/candicejoyballarta/movie-flix#readme"
 }

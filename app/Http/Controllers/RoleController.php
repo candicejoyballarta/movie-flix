@@ -14,7 +14,18 @@ class RoleController extends Controller
      */
     public function index()
     {
+        return Role::all();
+    }
+
+    public function getRoleAll(Request $request)
+    {
         return Role::orderBy('created_at', 'DESC')->get();
+    }
+
+    public function getRole(Request $request, $id)
+    {
+        $role = Role::where('role_id', $id)->first();
+        return response()->json($role);
     }
 
     /**
@@ -45,10 +56,9 @@ class RoleController extends Controller
      * @param  \App\Models\Role  $role
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Role $role)
     {
-        $role = Role::where('role_id', $id)->first();
-        return response()->json($role);
+        //
     }
 
     /**
@@ -72,9 +82,11 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $role = Role::find($id);
-        $roles = $role->update($request->all());
-        return response()->json($roles);
+        if ($request->ajax()) {
+            $role = role::find($id);
+            $roles = $role->update($request->all());
+            return response()->json($roles);
+        }
     }
 
     /**
@@ -85,8 +97,8 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        $role = Role::findOrFail($id);
+        $role = role::findOrFail($id);
         $role->delete();
-        return response()->json($role, 200);
+        return response()->json(['data'=>$role, 'status'=>200]);
     }
 }

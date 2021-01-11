@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class ActorController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +15,19 @@ class ActorController extends Controller
      */
     public function index()
     {
+        return Actor::all();
+    }
+
+    public function getActorAll(Request $request){
+        //if ($request->ajax()){
         return Actor::orderBy('created_at', 'DESC')->get();
+        //}
+    }
+
+    public function getActor(Request $request, $id)
+    {
+        $actor = Actor::where('actor_id', $id)->first();
+        return response()->json($actor);
     }
 
     /**
@@ -45,10 +58,9 @@ class ActorController extends Controller
      * @param  \App\Models\Actor  $actor
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Actor $actor)
     {
-        $actor = Actor::where('actor_id', $id)->first();
-        return response()->json($actor);
+        //
     }
 
     /**
@@ -72,9 +84,11 @@ class ActorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $actor = Actor::find($id);
-        $actors = $actor->update($request->all());
-        return response()->json($actors);
+        if ($request->ajax()) {
+            $actor = Actor::find($id);
+            $actors = $actor->update($request->all());
+            return response()->json($actors);
+        }
     }
 
     /**
@@ -87,6 +101,6 @@ class ActorController extends Controller
     {
         $actor = Actor::findOrFail($id);
         $actor->delete();
-        return response()->json($actor, 200);
+        return response()->json(['data'=>$actor, 'status'=>200]);
     }
 }

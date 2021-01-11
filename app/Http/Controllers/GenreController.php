@@ -14,7 +14,21 @@ class GenreController extends Controller
      */
     public function index()
     {
-        return Genre::orderBy('created_at', 'DESC')->get();
+        return Genre::all();
+    }
+
+    public function getGenreAll(Request $request)
+    {
+        if ($request->ajax()){
+            $genre = Genre::orderBy('created_at', 'DESC')->get();
+            return response()->json($genre);
+        }
+    }
+
+    public function getGenre(Request $request, $id)
+    {
+        $genre = Genre::where('genre_id', $id)->first();
+        return response()->json($genre);
     }
 
     /**
@@ -37,7 +51,6 @@ class GenreController extends Controller
     {
         $genre = Genre::create($request->all());
         return response()->json($genre);
-
     }
 
     /**
@@ -46,11 +59,9 @@ class GenreController extends Controller
      * @param  \App\Models\Genre  $genre
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Genre $genre)
     {
-        $genre = Genre::where('genre_id', $id)->first();
-        return response()->json($genre);
-
+        //
     }
 
     /**
@@ -63,7 +74,6 @@ class GenreController extends Controller
     {
         $genre = Genre::find($id);
         return response()->json($genre);
-
     }
 
     /**
@@ -75,10 +85,10 @@ class GenreController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $genre = Genre::find($id);
-        $genres = $genre->update($request->all());
-        return response()->json($genres);
-
+        if ($request->ajax()) {
+            $genre = Genre::find($id)->update($request->all());
+            return response()->json($genre);
+        }
     }
 
     /**
@@ -91,7 +101,6 @@ class GenreController extends Controller
     {
         $genre = Genre::findOrFail($id);
         $genre->delete();
-        return response()->json($genre, 200);
-
+        return response()->json(['data'=>$genre, 'status'=>200]);
     }
 }
