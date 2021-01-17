@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 class ActorController extends Controller
 {
 
+    // public function __construct()
+    // {
+    //     $this->middleware('auth', ['except' => ['index','getActorAll', 'getActor']]);
+    // }
+
     /**
      * Display a listing of the resource.
      *
@@ -18,9 +23,12 @@ class ActorController extends Controller
         return Actor::all();
     }
 
-    public function getActorAll(Request $request){
+    public function getActorAll(){
         //if ($request->ajax()){
-        return Actor::orderBy('created_at', 'DESC')->get();
+
+        $actor = Actor::orderBy('created_at', 'DESC')->get();
+        return response()->json($actor);
+
         //}
     }
 

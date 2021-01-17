@@ -8,6 +8,30 @@ use Illuminate\Support\Facades\DB;
 
 class MovieController extends Controller
 {
+
+    public function getMovieAll(){
+        //if ($request->ajax()){
+            $movies = Movie::orderBy('created_at', 'DESC')->get();
+            return response()->json($movies);
+        //}
+    }
+
+    public function getMovie(Request $request){
+        $search = $request->search;
+        if($search == ''){
+            $movies = Movie::orderBy('title', 'ASC')->select('movie_id', 'title')->limit(5)->get();
+        }else{
+            $movies = Movie::orderBy('title', 'ASC')->select('movie_id', 'title')->where('title', 'LIKE', '%'.$search.'%')->limit(5)->get();
+        }
+
+        $response = array();
+        foreach ($movies as $movie) {
+            $response[] = array("value"=>$movie->movie_id,"label"=>$movie->title);
+        }
+
+        return response()->json($response);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,20 +40,6 @@ class MovieController extends Controller
     public function index()
     {
         return Movie::all();
-    }
-
-    public function getMovieAll(Request $request){
-        //if ($request->ajax()){
-            $movies = Movie::orderBy('created_at', 'DESC')->get();
-            return response()->json($movies);
-        //}
-    }
-
-    public function getMovie(Request $request, $id){
-        if ($request->ajax()) {
-            $movie = Movie::where('movie_id',$id)->first();
-            return response()->json($movie);
-        }
     }
 
     /**
@@ -65,9 +75,14 @@ class MovieController extends Controller
      * @param  \App\Models\Movie  $movie
      * @return \Illuminate\Http\Response
      */
-    public function show(Movie $movie)
+    public function show($id)
     {
-        //
+        $movies = Movie::with('Producers')
+        ->where('movies.movie_id', '=', $id)
+        ->get();
+
+        return response()->json($movies);
+
     }
 
     /**

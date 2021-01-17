@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 
 class ProducerController extends Controller
 {
+
+    // public function __construct()
+    // {
+    //     $this->middleware('auth', ['except' => ['index','getProducerAll', 'getProducer']]);
+    // }
+
     /**
      * Display a listing of the resource.
      *

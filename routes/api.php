@@ -6,6 +6,7 @@ use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ActorController;
 use App\Http\Controllers\ProducerController;
 use App\Http\Controllers\GenreController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RoleController;
 
 /*
@@ -19,19 +20,41 @@ use App\Http\Controllers\RoleController;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+Route::get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/movies/show/{id}',[MovieController::class, 'getmovie'] );
-Route::get('/movie/all',[MovieController::class, 'getmovieall'] );
-Route::get('/actor/all',[ActorController::class, 'getActorAll'] );
-Route::get('/producer/all',[ProducerController::class, 'getProducerAll'] );
-Route::get('/genre/all',[GenreController::class, 'getGenreAll'] );
-Route::get('/role/all',[RoleController::class, 'getRoleAll'] );
+Route::post('/login', [LoginController::class, 'login'])->name('login');
+Route::post('/register', [LoginController::class, 'register'])->name('register');
 
-Route::resource('movie', MovieController::class);
-Route::resource('producer', ProducerController::class);
-Route::resource('genre', GenreController::class);
-Route::resource('role', RoleController::class);
-Route::resource('actor', ActorController::class);
+
+Route::middleware(['auth:sanctum'])->group(function () {
+
+    Route::get('/movie/all',[MovieController::class, 'getMovieAll']);
+    Route::resource('movie', MovieController::class);
+
+    Route::post('/movie/search', [MovieController::class, 'getMovie']);
+
+    Route::get('/actor/all',[ActorController::class, 'getActorAll']);
+    Route::resource('actor', ActorController::class);
+
+    Route::get('/producer/all',[ProducerController::class, 'getProducerAll']);
+    Route::resource('producer', ProducerController::class);
+
+    Route::get('/genre/all',[GenreController::class, 'getGenreAll']);
+    Route::resource('genre', GenreController::class);
+
+    Route::get('/role/all',[RoleController::class, 'getRoleAll']);
+    Route::resource('role', RoleController::class);
+    Route::post('/logout', [LoginController::class, 'logout']);
+});
+
+
+
+
+
+
+
+
+
+

@@ -1,21 +1,5 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-            <img src="/images/logo.png" alt="" width="50" height="40" class="d-inline-block">
-            Movie-flix.
-        </a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
-            {{--  Left Side Of Navbar  --}}
-            <form class="d-flex position-relative">
-                <input class="form-control me-2" id="search" type="search" placeholder="Search" aria-label="Search">
-                <input type="hidden" id="sID">
-                <button class="btn btn-outline-danger search" type="submit">Search</button>
-            </form>
-
-            {{--  Right Side Of Navbar  --}}
-            <div class="navbar-nav ms-auto account">
-                <span class="navbar-text" id="userName">
+export default function authLogout() {
+    return `<span class="navbar-text" id="userName">
                     Already Have an account?
                 </span>
                 <ul class="navbar-nav ms-auto">
@@ -52,9 +36,5 @@
                                 data-bs-target="#loginModal">Login</a>
                         </div>
                     </li>
-                </ul>
-            </div>
-
-        </div>
-    </div>
-</nav>
+                </ul>`;
+}

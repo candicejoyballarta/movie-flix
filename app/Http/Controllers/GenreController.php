@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class GenreController extends Controller
 {
+    // public function __construct()
+    // {
+    //     $this->middleware('auth', ['except' => ['index','getGenreAll', 'getGenre']]);
+    // }
+
     /**
      * Display a listing of the resource.
      *
@@ -17,12 +22,12 @@ class GenreController extends Controller
         return Genre::all();
     }
 
-    public function getGenreAll(Request $request)
+    public function getGenreAll()
     {
-        if ($request->ajax()){
+        //if ($request->ajax()){
             $genre = Genre::orderBy('created_at', 'DESC')->get();
             return response()->json($genre);
-        }
+        //}
     }
 
     public function getGenre(Request $request, $id)
