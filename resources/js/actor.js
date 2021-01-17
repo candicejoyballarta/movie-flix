@@ -2,8 +2,9 @@ import actorModal from './actorModal';
 const actor = {
     show(response) {
         let template = `<div class="container">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createActorModal">
-                            Add
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#createActorModal">
+                                Add
                         </button>
                         <a href="">Logout</a>
                         <br />
@@ -34,11 +35,14 @@ const actor = {
                     <td>${element.lname}</td>
                     <td>${element.notes}</td>
                     <td align='center'>
-                        <a href='#' data-bs-toggle='modal' data-bs-target='#editActorModal' id='actorEditBtn' data-id="${element.actor_id}"><i class='fa fa-pencil-square-o' aria-hidden='true' style='font-size:24px' >
+                        <a href='#' data-bs-toggle='modal' data-bs-target='#editActorModal'
+                            id='actorEditBtn' data-id="${element.actor_id}">
+                                <i class='fa fa-pencil-square-o' aria-hidden='true' style='font-size:24px' >
                         </a></i>
                     </td>
                     <td align='center'>
-                        <a href='#' id='actorDeleteBtn' data-id="${element.actor_id}"><i  class='fa fa-trash-o' style='font-size:24px; color:red' ></a></i>
+                        <a href='#' id='actorDeleteBtn' data-id="${element.actor_id}">
+                            <i  class='fa fa-trash-o' style='font-size:24px; color:red' ></a></i>
                         </td>
                     </tr>
             `);

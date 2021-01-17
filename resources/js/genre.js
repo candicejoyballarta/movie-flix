@@ -2,7 +2,8 @@ import genreModal from './genreModal';
 const genre = {
     show(response) {
         let template = `<div class="container">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createGenreModal">
+                        <button type="button" class="btn btn-primary"
+                            data-bs-toggle="modal" data-bs-target="#createGenreModal">
                             Add
                         </button>
                         <a href="">Logout</a>
@@ -30,11 +31,14 @@ const genre = {
                                 <td>${element.genre_id}</td>
                                 <td>${element.genre_name}</td>
                                 <td align='center'>
-                                    <a href='#' data-bs-toggle='modal' data-bs-target='#editGenreModal' id='editbtn' data-id="${element.genre_id}"><i class='fa fa-pencil-square-o' aria-hidden='true' style='font-size:24px' >
+                                    <a href='#' data-bs-toggle='modal' data-bs-target='#editGenreModal'
+                                        id='editbtn' data-id="${element.genre_id}">
+                                            <i class='fa fa-pencil-square-o' aria-hidden='true' style='font-size:24px' >
                                     </a></i>
                                 </td>
                                 <td align='center'>
-                                    <a href='#' id='genreDeleteBtn' data-id="${element.genre_id}"><i  class='fa fa-trash-o' style='font-size:24px; color:red' ></a></i>
+                                    <a href='#' id='genreDeleteBtn' data-id="${element.genre_id}">
+                                        <i  class='fa fa-trash-o' style='font-size:24px; color:red' ></a></i>
                                 </td>
                             </tr>
             `);

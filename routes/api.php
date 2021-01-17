@@ -24,16 +24,17 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 });
 
+
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/register', [LoginController::class, 'register'])->name('register');
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
-
+    Route::post('/movie/search', [MovieController::class, 'getMovie']);
     Route::get('/movie/all',[MovieController::class, 'getMovieAll']);
     Route::resource('movie', MovieController::class);
 
-    Route::post('/movie/search', [MovieController::class, 'getMovie']);
+
 
     Route::get('/actor/all',[ActorController::class, 'getActorAll']);
     Route::resource('actor', ActorController::class);
@@ -46,6 +47,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('/role/all',[RoleController::class, 'getRoleAll']);
     Route::resource('role', RoleController::class);
+
     Route::post('/logout', [LoginController::class, 'logout']);
 });
 

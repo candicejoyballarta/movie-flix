@@ -2,8 +2,9 @@ import roleModal from './roleModal';
 const role = {
     show(response) {
         let template = `<div class="container">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createRoleModal">
-                            Add
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#createRoleModal">
+                                Add
                         </button>
                         <br />
                         <div id="ctable" class="table-responsive">
@@ -33,11 +34,14 @@ const role = {
                                 <td>${element.movie_id}</td>
                                 <td>${element.actor_id}</td>
                                 <td align='center'>
-                                    <a href='#' data-bs-toggle='modal' data-bs-target='#editRoleModal' id='editbtn' data-id="${element.role_id}"><i class='fa fa-pencil-square-o' aria-hidden='true' style='font-size:24px' >
+                                    <a href='#' data-bs-toggle='modal' data-bs-target='#editRoleModal'
+                                        id='editbtn' data-id="${element.role_id}">
+                                            <i class='fa fa-pencil-square-o' aria-hidden='true' style='font-size:24px' >
                                     </a></i>
                                 </td>
                                 <td align='center'>
-                                    <a href='#' id='roleDeleteBtn' data-id="${element.role_id}"><i  class='fa fa-trash-o' style='font-size:24px; color:red' ></a></i>
+                                    <a href='#' id='roleDeleteBtn' data-id="${element.role_id}">
+                                    <i  class='fa fa-trash-o' style='font-size:24px; color:red' ></a></i>
                                 </td>
                             </tr>
                         `);

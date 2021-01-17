@@ -2,8 +2,9 @@ import movieModal from './movieModal';
 const movie = {
     show(response) {
         let template = `<div class="container">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createMovieModal">
-                                Add
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#createMovieModal">
+                                    Add
                             </button>
                             <a href="">Logout</a>
                             <br />
@@ -34,11 +35,15 @@ const movie = {
                     <td>${element.plot}</td>
                     <td>${element.year}</td>
                     <td align='center'>
-                        <a href='#' data-bs-toggle='modal' data-bs-target='#editMovieModal' id='editbtn' data-id="${element.movie_id}"><i class='fa fa-pencil-square-o' aria-hidden='true' style='font-size:24px' >
+                        <a href='#' data-bs-toggle='modal' data-bs-target='#editMovieModal'
+                            id='editbtn' data-id="${element.movie_id}">
+                                <i class='fa fa-pencil-square-o' aria-hidden='true' style='font-size:24px' >
                         </a></i>
                     </td>
                     <td align='center'>
-                        <a href='#' id='movieDeleteBtn' data-id="${element.movie_id}"><i  class='fa fa-trash-o' style='font-size:24px; color:red' ></a></i>
+                        <a href='#' id='movieDeleteBtn' data-id="${element.movie_id}">
+                            <i  class='fa fa-trash-o' style='font-size:24px; color:red' ></i>
+                        </a>
                     </td>
                 </tr>
             `);
@@ -138,9 +143,7 @@ const movie = {
                     });
                 },
             });
-        });
 
-        $('#editMovieModal').on('show.bs.modal', function (e) {
             $.ajax({
                 type: 'GET',
                 url: '/api/genre/all',

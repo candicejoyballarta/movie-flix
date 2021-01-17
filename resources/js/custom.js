@@ -71,7 +71,6 @@ $(document).ready(function () {
         if (!regValidation.form()) {
             e.preventDefault();
         }
-
         var data = $('#registerForm').serialize();
         $.ajax({
             type: 'POST',
@@ -147,7 +146,8 @@ $(document).ready(function () {
                 type: 'POST',
                 dataType: 'json',
                 headers: {
-                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
+                    Authorization:
+                        'Bearer ' + window.localStorage.getItem('access_token'),
                 },
                 data: {
                     search: request.term,
@@ -165,10 +165,18 @@ $(document).ready(function () {
     });
 
     $('.search').on('click', (e) => {
-        const term = $('#sID').val();
+        const id = $('#sID').val();
         $.ajax({
             type: 'GET',
-            url: '/api/movie/' + term,
+            url: '/api/movie/' + id,
+            dataType: 'json',
+            headers: {
+                Authorization:
+                    'Bearer ' + window.localStorage.getItem('access_token'),
+            },
+            success: function (data) {
+                response(data);
+            },
         });
     });
 

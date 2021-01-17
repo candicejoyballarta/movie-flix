@@ -2,8 +2,9 @@ import producerModal from './producerModal';
 const producer = {
     show(response) {
         let template = `<div class="container">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createProducerModal">
-                            Add
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#createProducerModal">
+                                Add
                         </button>
                         <a href="">Logout</a>
                         <br />
@@ -34,11 +35,14 @@ const producer = {
                     <td>${element.lname}</td>
                     <td>${element.company}</td>
                     <td align='center'>
-                        <a href='#' data-bs-toggle='modal' data-bs-target='#editProducerModal' id='editbtn' data-id="${element.producer_id}"><i class='fa fa-pencil-square-o' aria-hidden='true' style='font-size:24px' >
+                        <a href='#' data-bs-toggle='modal' data-bs-target='#editProducerModal'
+                            id='editbtn' data-id="${element.producer_id}">
+                                <i class='fa fa-pencil-square-o' aria-hidden='true' style='font-size:24px' >
                         </a></i>
                     </td>
                     <td align='center'>
-                        <a href='#' id='producerDeleteBtn' data-id="${element.producer_id}"><i  class='fa fa-trash-o' style='font-size:24px; color:red' ></a></i>
+                        <a href='#' id='producerDeleteBtn' data-id="${element.producer_id}">
+                            <i  class='fa fa-trash-o' style='font-size:24px; color:red' ></a></i>
                     </td>
                 </tr>
             `);

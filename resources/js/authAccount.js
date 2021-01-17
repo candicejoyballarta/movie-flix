@@ -8,11 +8,13 @@ export default function authAccount(name) {
                             data-bs-toggle="dropdown" aria-expanded="false">
                             Account
                         </a>
+
                         <div class="dropdown-menu dropdown-menu-end">
                             <a class="dropdown-item" href="#" id="updateUser" data-bs-toggle="modal"
                                 data-bs-target="#updateUserModal">Edit Account</a>
-                            <a class="dropdown-item logout" href="#" id="logout">LogOut</a>
+                                <a class="dropdown-item logout" href="#" id="userLogout">LogOut</a>
                         </div>
+                        <li class="nav-link"></li>
                     </li>
                 </ul>
 

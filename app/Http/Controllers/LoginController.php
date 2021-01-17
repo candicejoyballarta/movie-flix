@@ -21,6 +21,10 @@ class LoginController extends Controller
             'password'=> bcrypt($request['password'])
         ]);
 
+
+        AuthCreated::dispatch($user);
+        //Event::fire(new AuthCreated($user));
+
         return response()->json($user);
     }
 

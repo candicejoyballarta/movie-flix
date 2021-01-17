@@ -19,6 +19,7 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         'App\Events\AuthCreated' => [
+            'App\Listener\CreateLogEntry',
             'App\Listener\SendWelcomeEmail'
         ],
     ];

@@ -42,7 +42,7 @@
                 <a class="nav-link link" id="v-pills-role-tab" data-bs-toggle="pill" href="#" role="tab"
                     aria-controls="v-pills-role" aria-selected="false" data-id="role">Role</a>
                 <a class="nav-link" id="v-pills-role-tab" data-bs-toggle="pill" href="#" role="tab"
-                    aria-controls="v-pills-role" aria-selected="false" id="logout">Logout</a>
+                    aria-controls="v-pills-role" aria-selected="false" id="userLogout">Logout</a>
             </div>
         </div>
         <div class="col-md-8">
@@ -54,7 +54,7 @@
         <div class="col-md-2"></div>
         <div class="col-md-8">
             <div class="tab-content position-relative" id="v-pills-tabContent">
-                <button type="submit" id="userLogout">logout</button>
+
             </div>
 
         </div>
