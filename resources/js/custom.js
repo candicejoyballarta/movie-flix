@@ -174,7 +174,7 @@ $(document).ready(function () {
 
     $('.link').on('click', (e) => {
         const link = e.currentTarget.dataset.id;
-        //$('#content').toggle('fold');
+        $('#content').toggle('fold');
 
         $.ajax({
             type: 'GET',

@@ -472,8 +472,8 @@ $(document).ready(function () {
     });
   });
   $('.link').on('click', function (e) {
-    var link = e.currentTarget.dataset.id; //$('#content').toggle('fold');
-
+    var link = e.currentTarget.dataset.id;
+    $('#content').toggle('fold');
     $.ajax({
       type: 'GET',
       url: "/api/".concat(link, "/all"),
