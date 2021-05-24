@@ -31,9 +31,7 @@ export default function movieModal() {
                     </div>
                     <div class="form-group" id="genres">
                         <label class="control-label">Genre</label><br>
-
                     </div>
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
@@ -54,7 +52,6 @@ export default function movieModal() {
             </div>
             <div class="modal-body">
                 <form id="movieUpdateForm">
-                    <input type="hidden" name="_method" value="PUT">
                     <div class="form-group">
                         <label for="movieTitle" class="control-label">Title</label>
                         <input type="text" class="form-control" id="movieTitle" name="title">

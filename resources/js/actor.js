@@ -6,7 +6,7 @@ const actor = {
                             data-bs-target="#createActorModal">
                                 Add
                         </button>
-                        <a href="">Logout</a>
+                        <a href="" id="userLogout">Logout</a>
                         <br />
                         <div id="ctable" class="table-responsive">
                             <table class="table table-striped table-hover  resizable">

@@ -41,8 +41,6 @@
                     aria-controls="v-pills-genre" aria-selected="false" data-id="genre">Genre</a>
                 <a class="nav-link link" id="v-pills-role-tab" data-bs-toggle="pill" href="#" role="tab"
                     aria-controls="v-pills-role" aria-selected="false" data-id="role">Role</a>
-                <a class="nav-link" id="v-pills-role-tab" data-bs-toggle="pill" href="#" role="tab"
-                    aria-controls="v-pills-role" aria-selected="false" id="userLogout">Logout</a>
             </div>
         </div>
         <div class="col-md-8">

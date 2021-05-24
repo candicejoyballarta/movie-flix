@@ -6,7 +6,7 @@ const genre = {
                             data-bs-toggle="modal" data-bs-target="#createGenreModal">
                             Add
                         </button>
-                        <a href="">Logout</a>
+                        <a href="" id="userLogout">Logout</a>
                         <br />
                         <div id="ctable" class="table-responsive">
                             <table class="table table-striped table-hover  resizable">
@@ -75,27 +75,42 @@ const genre = {
             var data = $('#genreModalForm').serialize();
             //console.log(data);
             $.ajax({
-                type: 'POST',
-                url: '/api/genre',
-                data: data,
-                headers: {
-                    Authorization:
-                        'Bearer ' + localStorage.getItem('access_token'),
-                },
-                dataType: 'json',
-                success: function (data) {
-                    $('#createGenreModal').each(function () {
-                        $(this).modal('hide');
+                url: '/sanctum/csrf-cookie',
+                type: 'GET',
+                success: function (result) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/genre',
+                        data: data,
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                                'content'
+                            ),
+                            Authorization:
+                                'Bearer ' +
+                                localStorage.getItem('access_token'),
+                        },
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader(
+                                'Authorization',
+                                'Bearer ' + localStorage.getItem('access_token')
+                            );
+                        },
+                        success: function (data) {
+                            $('#createGenreModal').each(function () {
+                                $(this).modal('hide');
+                            });
+                            var tr = $('<tr>');
+                            tr.append($('<td>').html(data.genre_id));
+                            tr.append($('<td>').html(data.genre_name));
+                            $('#genreTableBody').prepend(tr);
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        },
                     });
-                    var tr = $('<tr>');
-                    tr.append($('<td>').html(data.genre_id));
-                    tr.append($('<td>').html(data.genre_name));
-                    $('#genreTableBody').prepend(tr);
-                },
-                error: function (error) {
-                    console.log(error);
-                },
-            });
+                }
+            })
         });
 
         $('#editGenreModal').on('show.bs.modal', function (e) {

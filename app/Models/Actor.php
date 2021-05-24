@@ -16,6 +16,6 @@ class Actor extends Model
 
     public function roles()
     {
-        return $this->hasMany(Role::class, 'role_id', 'actor_id');
+        return $this->hasMany(Role::class, 'actor_id');
     }
 }

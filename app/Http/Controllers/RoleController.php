@@ -4,14 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class RoleController extends Controller
 {
 
-    // public function __construct()
-    // {
-    //     $this->middleware('auth', ['except' => ['index','getRoleAll', 'getRole']]);
-    // }
+    protected $rules = [
+        'role_name' => 'required|max:45',
+        'movie_id' => 'required',
+        'actor_id' => 'required'
+    ];
+
+    protected $messages = [
+        'role_name.required' => 'First name required',
+        'role_name.max' => 'Only 45 char long',
+        'movie_id.required' => 'Movie required',
+        'actor_id.required' => 'Actor required'
+    ];
 
     /**
      * Display a listing of the resource.
@@ -20,7 +29,11 @@ class RoleController extends Controller
      */
     public function index()
     {
-        return Role::all();
+
+        return response()->json([
+            'roles' => Role::with(['movies', 'actors'])->orderBy('created_at', 'DESC')->get()
+        ], 200);
+
     }
 
     public function getRoleAll(Request $request)
@@ -52,8 +65,15 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $role = Role::create($request->all());
-        return response()->json($role);
+        $validData = $request->validate($this->rules);
+
+        $role = Role::create($validData);
+
+        Log::info('Role CREATED: ', ['role_id' => $role->role_id, 'role_name' => $role->role_name]);
+
+        return response()->json([
+            'msg' => 'Role Created'
+        ], 201);
     }
 
     /**
@@ -86,13 +106,18 @@ class RoleController extends Controller
      * @param  \App\Models\Role  $role
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Role  $role)
     {
-        if ($request->ajax()) {
-            $role = role::find($id);
-            $roles = $role->update($request->all());
-            return response()->json($roles);
-        }
+        $validData = $request->validate($this->rules);
+
+        $role->update($validData);
+
+        Log::notice('Producer UPDATED: ', ['role_id' => $role->role_id, 'role_name' => $role->role_name]);
+
+        return response()->json([
+            'msg' => 'Role Updated'
+        ], 200);
+
     }
 
     /**
@@ -101,10 +126,12 @@ class RoleController extends Controller
      * @param  \App\Models\Role  $role
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Role  $role)
     {
-        $role = role::findOrFail($id);
         $role->delete();
-        return response()->json(['data'=>$role, 'status'=>200]);
+
+        Log::warning('Role DELETED: ', ['role_id' => $role->role_id, 'role_name' => $role->role_name]);
+
+        return response()->json(['msg' => 'Role Deleted'], 200);
     }
 }

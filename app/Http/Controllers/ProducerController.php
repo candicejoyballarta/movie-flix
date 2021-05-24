@@ -4,14 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\Producer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ProducerController extends Controller
 {
 
-    // public function __construct()
-    // {
-    //     $this->middleware('auth', ['except' => ['index','getProducerAll', 'getProducer']]);
-    // }
+    protected $rules = [
+        'fname' => 'required|max:16',
+        'lname' => 'required|max:16',
+        'company' => 'required|max:45',
+    ];
+
+    protected $messages = [
+        'fname.required' => 'First name required',
+        'fname.max' => 'Only 16 char long',
+        'lname.required' => 'Last name required',
+        'lname.max' => 'Only 16 char long',
+        'company.required' => 'Company required',
+        'company.max' => 'Only 45 char long'
+    ];
 
     /**
      * Display a listing of the resource.
@@ -20,7 +31,11 @@ class ProducerController extends Controller
      */
     public function index()
     {
-        return Producer::all();
+
+        return response()->json([
+            'producers' => Producer::with(['movies'])->orderBy('created_at', 'DESC')->get()
+        ], 200);
+
     }
 
     public function getProducerAll(Request $request)
@@ -28,10 +43,12 @@ class ProducerController extends Controller
         return Producer::orderby('created_at', 'DESC')->get();
     }
 
-    public function getProducer(Request $request, $id)
+    public function getProducer(Request $request, $name)
     {
-        $producer = Producer::where('producer_id', $id)->first();
-        return response()->json($producer);
+        $producer = Producer::where('fname', $name)->first();
+        return response()->json([
+            'producer' => $producer
+        ], 200);
     }
 
     /**
@@ -52,8 +69,15 @@ class ProducerController extends Controller
      */
     public function store(Request $request)
     {
-        $producer = Producer::create($request->all());
-        return response()->json($producer);
+        $validData = $request->validate($this->rules);
+
+        $producer = Producer::create($validData);
+
+        Log::info('Producer CREATED: ', ['producer_id' => $producer->producer_id, 'producer_fname' => $producer->fname]);
+
+        return response()->json([
+            'msg' => 'Producer Created'
+        ], 201);
     }
 
     /**
@@ -64,7 +88,8 @@ class ProducerController extends Controller
      */
     public function show(Producer $producer)
     {
-        //
+        $producer = Producer::where('producer_id', $producer)->first();
+        return response()->json($producer);
     }
 
     /**
@@ -86,13 +111,17 @@ class ProducerController extends Controller
      * @param  \App\Models\Producer  $producer
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Producer $producer)
     {
-        if ($request->ajax()) {
-            $producer = Producer::find($id);
-            $producers = $producer->update($request->all());
-            return response()->json($producers);
-        }
+        $validData = $request->validate($this->rules);
+
+        $producer->update($validData);
+
+        Log::notice('Producer UPDATED: ', ['producer_id' => $producer->producer_id, 'producer_fname' => $producer->fname]);
+
+        return response()->json([
+            'msg' => 'Producer updated'
+        ], 200);
     }
 
     /**
@@ -101,10 +130,14 @@ class ProducerController extends Controller
      * @param  \App\Models\Producer  $producer
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Producer $producer)
     {
-        $producer = Producer::findOrFail($id);
         $producer->delete();
-        return response()->json(['data'=>$producer, 'status'=>200]);
+
+
+        Log::warning('Producer DELETED: ', ['producer_id' => $producer->producer_id, 'producer_fname' => $producer->fname]);
+
+
+        return response()->json(['msg' => 'Producer DELETED'], 200);
     }
 }

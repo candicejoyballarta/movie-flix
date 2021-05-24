@@ -16,7 +16,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var actor = {
   show: function show(response) {
-    var template = "<div class=\"container\">\n                        <button type=\"button\" class=\"btn btn-primary\" data-bs-toggle=\"modal\"\n                            data-bs-target=\"#createActorModal\">\n                                Add\n                        </button>\n                        <a href=\"\">Logout</a>\n                        <br />\n                        <div id=\"ctable\" class=\"table-responsive\">\n                            <table class=\"table table-striped table-hover  resizable\">\n                                <thead>\n                                    <tr>\n                                        <th>ID</th>\n                                        <th>Firstname</th>\n                                        <th>Lastname</th>\n                                        <th>Notes</th>\n                                        <th>Edit</th>\n                                        <th>Delete</th>\n                                    </tr>\n                                </thead>\n                                <tbody id=\"actorTableBody\">\n\n                                </tbody>\n                            </table>\n                        </div>\n                    </div>";
+    var template = "<div class=\"container\">\n                        <button type=\"button\" class=\"btn btn-primary\" data-bs-toggle=\"modal\"\n                            data-bs-target=\"#createActorModal\">\n                                Add\n                        </button>\n                        <a href=\"\" id=\"userLogout\">Logout</a>\n                        <br />\n                        <div id=\"ctable\" class=\"table-responsive\">\n                            <table class=\"table table-striped table-hover  resizable\">\n                                <thead>\n                                    <tr>\n                                        <th>ID</th>\n                                        <th>Firstname</th>\n                                        <th>Lastname</th>\n                                        <th>Notes</th>\n                                        <th>Edit</th>\n                                        <th>Delete</th>\n                                    </tr>\n                                </thead>\n                                <tbody id=\"actorTableBody\">\n\n                                </tbody>\n                            </table>\n                        </div>\n                    </div>";
     $('#content').html(template);
     response.forEach(function (element) {
       $('#actorTableBody').append("\n                <tr>\n                    <td>".concat(element.actor_id, "</td>\n                    <td>").concat(element.fname, "</td>\n                    <td>").concat(element.lname, "</td>\n                    <td>").concat(element.notes, "</td>\n                    <td align='center'>\n                        <a href='#' data-bs-toggle='modal' data-bs-target='#editActorModal'\n                            id='actorEditBtn' data-id=\"").concat(element.actor_id, "\">\n                                <i class='fa fa-pencil-square-o' aria-hidden='true' style='font-size:24px' >\n                        </a></i>\n                    </td>\n                    <td align='center'>\n                        <a href='#' id='actorDeleteBtn' data-id=\"").concat(element.actor_id, "\">\n                            <i  class='fa fa-trash-o' style='font-size:24px; color:red' ></a></i>\n                        </td>\n                    </tr>\n            "));
@@ -248,7 +248,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => /* binding */ authAccount
 /* harmony export */ });
 function authAccount(name) {
-  return "<span class=\"navbar-text\" id=\"userName\">\n                ".concat(name, "\n                </span>\n                <ul class=\"navbar-nav ms-auto\">\n                    <li class=\"nav-item dropdown\">\n                        <a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"navbarDropdown\" role=\"button\"\n                            data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n                            Account\n                        </a>\n\n                        <div class=\"dropdown-menu dropdown-menu-end\">\n                            <a class=\"dropdown-item\" href=\"#\" id=\"updateUser\" data-bs-toggle=\"modal\"\n                                data-bs-target=\"#updateUserModal\">Edit Account</a>\n                                <a class=\"dropdown-item logout\" href=\"#\" id=\"userLogout\">LogOut</a>\n                        </div>\n                        <li class=\"nav-link\"></li>\n                    </li>\n                </ul>\n\n    ");
+  return "<span class=\"navbar-text\" id=\"userName\">\n                Hello, ".concat(name, "\n                </span>\n                <ul class=\"navbar-nav ms-auto\">\n                    <li class=\"nav-item dropdown\">\n                        <a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"navbarDropdown\" role=\"button\"\n                            data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n                            Account\n                        </a>\n\n                        <div class=\"dropdown-menu dropdown-menu-end\">\n                            <a class=\"dropdown-item\" href=\"#\" id=\"login\" data-bs-toggle=\"modal\"\n                                data-bs-target=\"#loginModal\">Login</a>\n\n                        </div>\n                    </li>\n                </ul>\n\n    ");
 }
 
 /***/ }),
@@ -293,7 +293,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 $('#userLogout').on('click', function (e) {
-  //console.log(user);
+  console.log(user);
   $.ajax({
     type: 'POST',
     url: '/api/logout',
@@ -303,6 +303,7 @@ $('#userLogout').on('click', function (e) {
     success: function success(data) {
       $('.account').html((0,_authLogout__WEBPACK_IMPORTED_MODULE_7__.default)());
       console.log(data);
+      window.localStorage.removeItem('access_token');
     },
     error: function error() {
       alert('Failed to logout.. try again');
@@ -421,23 +422,29 @@ $(document).ready(function () {
     var data = $('#loginForm').serialize();
     console.log(data);
     $.ajax({
-      type: 'POST',
-      url: '/api/login',
-      data: data,
-      headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-      },
-      dataType: 'json',
-      success: function success(data) {
-        console.log('login request sent');
-        console.log(data);
-        $('.account').html((0,_authAccount__WEBPACK_IMPORTED_MODULE_6__.default)(data.user.name));
-        window.localStorage.setItem('access_token', data.access_token);
-        console.log(window.localStorage.getItem('access_token'));
-        console.log($('#logout'));
-      },
-      error: function error(data) {
-        alert('Failed to login.. try again');
+      url: '/sanctum/csrf-cookie',
+      type: 'GET',
+      success: function success(result) {
+        $.ajax({
+          type: 'POST',
+          url: '/api/login',
+          data: data,
+          headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          },
+          dataType: 'json',
+          success: function success(data) {
+            console.log('login request sent');
+            console.log(data);
+            $('.account').html((0,_authAccount__WEBPACK_IMPORTED_MODULE_6__.default)(data.user.name));
+            window.localStorage.setItem('access_token', data.access_token);
+            console.log(window.localStorage.getItem('access_token'));
+            console.log($('#logout'));
+          },
+          error: function error(data) {
+            alert('Failed to login.. try again');
+          }
+        });
       }
     });
   });
@@ -480,7 +487,7 @@ $(document).ready(function () {
   });
   $('.link').on('click', function (e) {
     var link = e.currentTarget.dataset.id;
-    $('#content').toggle('fold');
+    $('#content').show('blind');
     $.ajax({
       type: 'GET',
       url: "/api/".concat(link, "/all"),
@@ -515,7 +522,19 @@ $(document).ready(function () {
         }
       }
     });
-  });
+  }); // $.ajax({
+  //     type: 'GET',
+  //     url: 'api/user',
+  //     success: function (result) {
+  //         if (!data) {
+  //             $('.account').html(authAccount(result.name));
+  //             console.log(result);
+  //         }
+  //     },
+  // });
+});
+$(document).ajaxSend(function (event, jqXHR) {
+  jqXHR.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('access_token'));
 });
 
 /***/ }),
@@ -534,7 +553,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var genre = {
   show: function show(response) {
-    var template = "<div class=\"container\">\n                        <button type=\"button\" class=\"btn btn-primary\"\n                            data-bs-toggle=\"modal\" data-bs-target=\"#createGenreModal\">\n                            Add\n                        </button>\n                        <a href=\"\">Logout</a>\n                        <br />\n                        <div id=\"ctable\" class=\"table-responsive\">\n                            <table class=\"table table-striped table-hover  resizable\">\n                                <thead>\n                                    <tr>\n                                        <th>ID</th>\n                                        <th>Genre Name</th>\n                                        <th>Edit</th>\n                                        <th>Delete</th>\n                                    </tr>\n                                </thead>\n                                <tbody id=\"genreTableBody\">\n\n                                </tbody>\n                            </table>\n                        </div>\n                    </div>";
+    var template = "<div class=\"container\">\n                        <button type=\"button\" class=\"btn btn-primary\"\n                            data-bs-toggle=\"modal\" data-bs-target=\"#createGenreModal\">\n                            Add\n                        </button>\n                        <a href=\"\" id=\"userLogout\">Logout</a>\n                        <br />\n                        <div id=\"ctable\" class=\"table-responsive\">\n                            <table class=\"table table-striped table-hover  resizable\">\n                                <thead>\n                                    <tr>\n                                        <th>ID</th>\n                                        <th>Genre Name</th>\n                                        <th>Edit</th>\n                                        <th>Delete</th>\n                                    </tr>\n                                </thead>\n                                <tbody id=\"genreTableBody\">\n\n                                </tbody>\n                            </table>\n                        </div>\n                    </div>";
     $('#content').html(template);
     response.forEach(function (element) {
       $('#genreTableBody').append("\n                            <tr>\n                                <td>".concat(element.genre_id, "</td>\n                                <td>").concat(element.genre_name, "</td>\n                                <td align='center'>\n                                    <a href='#' data-bs-toggle='modal' data-bs-target='#editGenreModal'\n                                        id='editbtn' data-id=\"").concat(element.genre_id, "\">\n                                            <i class='fa fa-pencil-square-o' aria-hidden='true' style='font-size:24px' >\n                                    </a></i>\n                                </td>\n                                <td align='center'>\n                                    <a href='#' id='genreDeleteBtn' data-id=\"").concat(element.genre_id, "\">\n                                        <i  class='fa fa-trash-o' style='font-size:24px; color:red' ></a></i>\n                                </td>\n                            </tr>\n            "));
@@ -572,24 +591,33 @@ var genre = {
       var data = $('#genreModalForm').serialize(); //console.log(data);
 
       $.ajax({
-        type: 'POST',
-        url: '/api/genre',
-        data: data,
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('access_token')
-        },
-        dataType: 'json',
-        success: function success(data) {
-          $('#createGenreModal').each(function () {
-            $(this).modal('hide');
+        url: '/sanctum/csrf-cookie',
+        type: 'GET',
+        success: function success(result) {
+          $.ajax({
+            type: 'POST',
+            url: '/api/genre',
+            data: data,
+            headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+              Authorization: 'Bearer ' + localStorage.getItem('access_token')
+            },
+            beforeSend: function beforeSend(xhr) {
+              xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('access_token'));
+            },
+            success: function success(data) {
+              $('#createGenreModal').each(function () {
+                $(this).modal('hide');
+              });
+              var tr = $('<tr>');
+              tr.append($('<td>').html(data.genre_id));
+              tr.append($('<td>').html(data.genre_name));
+              $('#genreTableBody').prepend(tr);
+            },
+            error: function error(_error) {
+              console.log(_error);
+            }
           });
-          var tr = $('<tr>');
-          tr.append($('<td>').html(data.genre_id));
-          tr.append($('<td>').html(data.genre_name));
-          $('#genreTableBody').prepend(tr);
-        },
-        error: function error(_error) {
-          console.log(_error);
         }
       });
     });
@@ -734,7 +762,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var movie = {
   show: function show(response) {
-    var template = "<div class=\"container\">\n                            <button type=\"button\" class=\"btn btn-primary\" data-bs-toggle=\"modal\"\n                                data-bs-target=\"#createMovieModal\">\n                                    Add\n                            </button>\n                            <a href=\"\">Logout</a>\n                            <br />\n                            <div id=\"ctable\" class=\"table-responsive\">\n                                <table class=\"table table-striped table-hover resizable\">\n                                    <thead id=\"cheader\">\n                                        <tr>\n                                            <th>ID</th>\n                                            <th>Title</th>\n                                            <th>Plot</th>\n                                            <th>Year</th>\n                                            <th>Edit</th>\n                                            <th>Delete</th>\n                                        </tr>\n                                    </thead>\n                                    <tbody id=\"movieTableBody\">\n\n                                    </tbody>\n                                </table>\n                            </div>\n                        </div>";
+    var template = "<div class=\"container\">\n                            <button type=\"button\" class=\"btn btn-primary\" data-bs-toggle=\"modal\"\n                                data-bs-target=\"#createMovieModal\">\n                                    Add\n                            </button>\n                            <a href=\"\" id=\"userLogout\">Logout</a>\n                            <br />\n                            <div id=\"ctable\" class=\"table-responsive\">\n                                <table class=\"table table-striped table-hover resizable\">\n                                    <thead id=\"cheader\">\n                                        <tr>\n                                            <th>ID</th>\n                                            <th>Title</th>\n                                            <th>Plot</th>\n                                            <th>Year</th>\n                                            <th>Edit</th>\n                                            <th>Delete</th>\n                                        </tr>\n                                    </thead>\n                                    <tbody id=\"movieTableBody\">\n\n                                    </tbody>\n                                </table>\n                            </div>\n                        </div>";
     $('#content').html(template);
     response.forEach(function (element) {
       $('#movieTableBody').append("\n                <tr>\n                    <td>".concat(element.movie_id, "</td>\n                    <td>").concat(element.title, "</td>\n                    <td>").concat(element.plot, "</td>\n                    <td>").concat(element.year, "</td>\n                    <td align='center'>\n                        <a href='#' data-bs-toggle='modal' data-bs-target='#editMovieModal'\n                            id='editbtn' data-id=\"").concat(element.movie_id, "\">\n                                <i class='fa fa-pencil-square-o' aria-hidden='true' style='font-size:24px' >\n                        </a></i>\n                    </td>\n                    <td align='center'>\n                        <a href='#' id='movieDeleteBtn' data-id=\"").concat(element.movie_id, "\">\n                            <i  class='fa fa-trash-o' style='font-size:24px; color:red' ></i>\n                        </a>\n                    </td>\n                </tr>\n            "));
@@ -798,13 +826,14 @@ var movie = {
       }
 
       var data = $('#movieModalForm').serialize();
-      console.log(data);
+      console.log(window.localStorage.getItem('access_token'));
       $.ajax({
         type: 'POST',
         url: '/api/movie',
         data: data,
         headers: {
-          Authorization: 'Bearer ' + window.localStorage.getItem('access_token')
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+          Authorization: 'Bearer ' + localStorage.getItem('access_token')
         },
         dataType: 'json',
         success: function success(data) {
@@ -824,6 +853,7 @@ var movie = {
       });
     });
     $('#createMovieModal').on('hidden.bs.modal', function (e) {
+      console.log($('#createMovieModal'));
       $('#movieModalForm').trigger('reset');
       $('#producer_id').empty();
       $('#genres').empty();
@@ -881,7 +911,6 @@ var movie = {
           $('#moviePlot').val(data.plot);
           $('#movieYear').val(data.year);
           $('#movieProd').val(data.producer_id);
-          var genre_id = [];
           data.genres.forEach(function (element) {
             $("#genre_id".concat(element.genre_id)).attr('checked', true);
           });
@@ -1069,7 +1098,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => /* binding */ movieModal
 /* harmony export */ });
 function movieModal() {
-  return "<div class=\"modal fade\" id=\"createMovieModal\" tabindex=\"-1\" aria-labelledby=\"createMovieLabel\" aria-hidden=\"true\">\n    <div class=\"modal-dialog\">\n        <!-- Modal content-->\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <h5 class=\"modal-title\">Create new movie</h5>\n                <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>\n            </div>\n            <div class=\"modal-body\">\n                <form id=\"movieModalForm\" >\n                    <div class=\"form-group\">\n                        <label for=\"title\" class=\"control-label\">Title</label>\n                        <input type=\"text\" class=\"form-control\" id=\"title\" name=\"title\">\n\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"plot\" class=\"control-label\">Plot</label>\n                        <input type=\"text\" class=\"form-control \" id=\"plot\" name=\"plot\"></text>\n\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"year\" class=\"control-label\">Year</label>\n                        <input type=\"text\" class=\"form-control \" id=\"year\" name=\"year\">\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"producer_id\" class=\"control-label\">Producer</label>\n                        <select class=\"form-select\" aria-label=\"producer\" id=\"producer_id\" name=\"producer_id\">\n                            <option value=\"\" disabled selected>- Select -</option>\n                        </select>\n                    </div>\n                    <div class=\"form-group\" id=\"genres\">\n                        <label class=\"control-label\">Genre</label><br>\n\n                    </div>\n\n            </div>\n            <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-default\" data-bs-dismiss=\"modal\">Close</button>\n                <button id=\"createMovieSubmit\" type=\"submit\" class=\"btn btn-primary\">Save</button>\n            </div>\n            </form>\n        </div>\n    </div>\n</div>\n\n<div class=\"modal\" id=\"editMovieModal\" tabindex=\"-1\" aria-labelledby=\"editMovieLabel\" aria-hidden=\"true\">\n    <div class=\"modal-dialog\">\n        <!-- Modal content-->\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <h5 class=\"modal-title\">Update movie</h5>\n                <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>\n            </div>\n            <div class=\"modal-body\">\n                <form id=\"movieUpdateForm\">\n                    <input type=\"hidden\" name=\"_method\" value=\"PUT\">\n                    <div class=\"form-group\">\n                        <label for=\"movieTitle\" class=\"control-label\">Title</label>\n                        <input type=\"text\" class=\"form-control\" id=\"movieTitle\" name=\"title\">\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"moviePlot\" class=\"control-label\">Plot</label>\n                        <input type=\"text\" class=\"form-control \" id=\"moviePlot\" name=\"plot\"></text>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"movieYear\" class=\"conrol-label\">Year</label>\n                        <input type=\"text\" class=\"form-control \" id=\"movieYear\" name=\"year\">\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"producer_id\" class=\"control-label\">Producer</label>\n                        <select class=\"form-select\" aria-label=\"producers\" id=\"movieProd\" name=\"producer_id\">\n                        </select>\n                    </div>\n                    <label class=\"control-label\">Genre</label><br>\n                    <div class=\"form-group\" id=\"editGenres\">\n\n\n                    </div>\n            </div>\n            <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-default\" data-bs-dismiss=\"modal\">Close</button>\n                <button id=\"updateMovieBtn\" type=\"submit\" class=\"btn btn-primary\">Update</button>\n                <input type=\"hidden\" id=\"movie_id\" name=\"movie_id\">\n            </div>\n            </form>\n        </div>\n    </div>\n</div>";
+  return "<div class=\"modal fade\" id=\"createMovieModal\" tabindex=\"-1\" aria-labelledby=\"createMovieLabel\" aria-hidden=\"true\">\n    <div class=\"modal-dialog\">\n        <!-- Modal content-->\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <h5 class=\"modal-title\">Create new movie</h5>\n                <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>\n            </div>\n            <div class=\"modal-body\">\n                <form id=\"movieModalForm\" >\n                    <div class=\"form-group\">\n                        <label for=\"title\" class=\"control-label\">Title</label>\n                        <input type=\"text\" class=\"form-control\" id=\"title\" name=\"title\">\n\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"plot\" class=\"control-label\">Plot</label>\n                        <input type=\"text\" class=\"form-control \" id=\"plot\" name=\"plot\"></text>\n\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"year\" class=\"control-label\">Year</label>\n                        <input type=\"text\" class=\"form-control \" id=\"year\" name=\"year\">\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"producer_id\" class=\"control-label\">Producer</label>\n                        <select class=\"form-select\" aria-label=\"producer\" id=\"producer_id\" name=\"producer_id\">\n                            <option value=\"\" disabled selected>- Select -</option>\n                        </select>\n                    </div>\n                    <div class=\"form-group\" id=\"genres\">\n                        <label class=\"control-label\">Genre</label><br>\n                    </div>\n            </div>\n            <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-default\" data-bs-dismiss=\"modal\">Close</button>\n                <button id=\"createMovieSubmit\" type=\"submit\" class=\"btn btn-primary\">Save</button>\n            </div>\n            </form>\n        </div>\n    </div>\n</div>\n\n<div class=\"modal\" id=\"editMovieModal\" tabindex=\"-1\" aria-labelledby=\"editMovieLabel\" aria-hidden=\"true\">\n    <div class=\"modal-dialog\">\n        <!-- Modal content-->\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <h5 class=\"modal-title\">Update movie</h5>\n                <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>\n            </div>\n            <div class=\"modal-body\">\n                <form id=\"movieUpdateForm\">\n                    <div class=\"form-group\">\n                        <label for=\"movieTitle\" class=\"control-label\">Title</label>\n                        <input type=\"text\" class=\"form-control\" id=\"movieTitle\" name=\"title\">\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"moviePlot\" class=\"control-label\">Plot</label>\n                        <input type=\"text\" class=\"form-control \" id=\"moviePlot\" name=\"plot\"></text>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"movieYear\" class=\"conrol-label\">Year</label>\n                        <input type=\"text\" class=\"form-control \" id=\"movieYear\" name=\"year\">\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"producer_id\" class=\"control-label\">Producer</label>\n                        <select class=\"form-select\" aria-label=\"producers\" id=\"movieProd\" name=\"producer_id\">\n                        </select>\n                    </div>\n                    <label class=\"control-label\">Genre</label><br>\n                    <div class=\"form-group\" id=\"editGenres\">\n\n\n                    </div>\n            </div>\n            <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-default\" data-bs-dismiss=\"modal\">Close</button>\n                <button id=\"updateMovieBtn\" type=\"submit\" class=\"btn btn-primary\">Update</button>\n                <input type=\"hidden\" id=\"movie_id\" name=\"movie_id\">\n            </div>\n            </form>\n        </div>\n    </div>\n</div>";
 }
 
 /***/ }),
@@ -1088,7 +1117,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var producer = {
   show: function show(response) {
-    var template = "<div class=\"container\">\n                        <button type=\"button\" class=\"btn btn-primary\" data-bs-toggle=\"modal\"\n                            data-bs-target=\"#createProducerModal\">\n                                Add\n                        </button>\n                        <a href=\"\">Logout</a>\n                        <br />\n                        <div id=\"ctable\" class=\"table-responsive\">\n                            <table class=\"table table-striped table-hover  resizable\">\n                                <thead>\n                                    <tr>\n                                        <th>ID</th>\n                                        <th>First Name</th>\n                                        <th>Last Name</th>\n                                        <th>Company</th>\n                                        <th>Edit</th>\n                                        <th>Delete</th>\n                                    </tr>\n                                </thead>\n                                <tbody id=\"producerTableBody\">\n\n                                </tbody>\n                            </table>\n                        </div>\n                    </div>";
+    var template = "<div class=\"container\">\n                        <button type=\"button\" class=\"btn btn-primary\" data-bs-toggle=\"modal\"\n                            data-bs-target=\"#createProducerModal\">\n                                Add\n                        </button>\n                        <a href=\"\" id=\"userLogout\">Logout</a>\n                        <br />\n                        <div id=\"ctable\" class=\"table-responsive\">\n                            <table class=\"table table-striped table-hover  resizable\">\n                                <thead>\n                                    <tr>\n                                        <th>ID</th>\n                                        <th>First Name</th>\n                                        <th>Last Name</th>\n                                        <th>Company</th>\n                                        <th>Edit</th>\n                                        <th>Delete</th>\n                                    </tr>\n                                </thead>\n                                <tbody id=\"producerTableBody\">\n\n                                </tbody>\n                            </table>\n                        </div>\n                    </div>";
     $('#content').html(template);
     response.forEach(function (element) {
       $('#producerTableBody').append("\n                <tr>\n                    <td>".concat(element.producer_id, "</td>\n                    <td>").concat(element.fname, "</td>\n                    <td>").concat(element.lname, "</td>\n                    <td>").concat(element.company, "</td>\n                    <td align='center'>\n                        <a href='#' data-bs-toggle='modal' data-bs-target='#editProducerModal'\n                            id='editbtn' data-id=\"").concat(element.producer_id, "\">\n                                <i class='fa fa-pencil-square-o' aria-hidden='true' style='font-size:24px' >\n                        </a></i>\n                    </td>\n                    <td align='center'>\n                        <a href='#' id='producerDeleteBtn' data-id=\"").concat(element.producer_id, "\">\n                            <i  class='fa fa-trash-o' style='font-size:24px; color:red' ></a></i>\n                    </td>\n                </tr>\n            "));
@@ -1145,7 +1174,8 @@ var producer = {
         url: '/api/producer',
         data: data,
         headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+          'Authorization': 'Bearer ' + localStorage.getItem('access_token')
         },
         dataType: 'json',
         success: function success(data) {
@@ -1342,7 +1372,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var role = {
   show: function show(response) {
-    var template = "<div class=\"container\">\n                        <button type=\"button\" class=\"btn btn-primary\" data-bs-toggle=\"modal\"\n                            data-bs-target=\"#createRoleModal\">\n                                Add\n                        </button>\n                        <br />\n                        <div id=\"ctable\" class=\"table-responsive\">\n                            <table class=\"table table-striped table-hover  resizable\">\n                                <thead>\n                                    <tr>\n                                        <th>ID</th>\n                                        <th>Role Name</th>\n                                        <th>Movie</th>\n                                        <th>Actor</th>\n                                        <th>Edit</th>\n                                        <th>Delete</th>\n                                    </tr>\n                                </thead>\n                                <tbody id=\"roleTableBody\">\n\n                                </tbody>\n                            </table>\n                        </div>\n                    </div>";
+    var template = "<div class=\"container\">\n                        <button type=\"button\" class=\"btn btn-primary\" data-bs-toggle=\"modal\"\n                            data-bs-target=\"#createRoleModal\">\n                                Add\n                        </button>\n                        <a href=\"\" id=\"userLogout\">Logout</a>\n                        <br />\n                        <div id=\"ctable\" class=\"table-responsive\">\n                            <table class=\"table table-striped table-hover  resizable\">\n                                <thead>\n                                    <tr>\n                                        <th>ID</th>\n                                        <th>Role Name</th>\n                                        <th>Movie</th>\n                                        <th>Actor</th>\n                                        <th>Edit</th>\n                                        <th>Delete</th>\n                                    </tr>\n                                </thead>\n                                <tbody id=\"roleTableBody\">\n\n                                </tbody>\n                            </table>\n                        </div>\n                    </div>";
     $('#content').html(template);
     response.forEach(function (element) {
       $('#roleTableBody').append("\n                            <tr>\n                                <td>".concat(element.role_id, "</td>\n                                <td>").concat(element.role_name, "</td>\n                                <td>").concat(element.movie_id, "</td>\n                                <td>").concat(element.actor_id, "</td>\n                                <td align='center'>\n                                    <a href='#' data-bs-toggle='modal' data-bs-target='#editRoleModal'\n                                        id='editbtn' data-id=\"").concat(element.role_id, "\">\n                                            <i class='fa fa-pencil-square-o' aria-hidden='true' style='font-size:24px' >\n                                    </a></i>\n                                </td>\n                                <td align='center'>\n                                    <a href='#' id='roleDeleteBtn' data-id=\"").concat(element.role_id, "\">\n                                    <i  class='fa fa-trash-o' style='font-size:24px; color:red' ></a></i>\n                                </td>\n                            </tr>\n                        "));
@@ -1372,6 +1402,10 @@ var role = {
       $.ajax({
         type: 'GET',
         url: '/api/actor/all',
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+          Authorization: 'Bearer ' + localStorage.getItem('access_token')
+        },
         success: function success(response) {
           response.forEach(function (element) {
             $('#actor_id').append("\n                                        <option value=\"".concat(element.actor_id, "\">").concat(element.fname, " ").concat(element.lname, "</option>\n                                    "));

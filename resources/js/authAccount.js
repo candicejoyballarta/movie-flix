@@ -1,6 +1,6 @@
 export default function authAccount(name) {
     return `<span class="navbar-text" id="userName">
-                ${name}
+                Hello, ${name}
                 </span>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
@@ -10,11 +10,10 @@ export default function authAccount(name) {
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-end">
-                            <a class="dropdown-item" href="#" id="updateUser" data-bs-toggle="modal"
-                                data-bs-target="#updateUserModal">Edit Account</a>
-                                <a class="dropdown-item logout" href="#" id="userLogout">LogOut</a>
+                            <a class="dropdown-item" href="#" id="login" data-bs-toggle="modal"
+                                data-bs-target="#loginModal">Login</a>
+
                         </div>
-                        <li class="nav-link"></li>
                     </li>
                 </ul>
 

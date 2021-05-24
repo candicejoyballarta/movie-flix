@@ -6,7 +6,7 @@ const movie = {
                                 data-bs-target="#createMovieModal">
                                     Add
                             </button>
-                            <a href="">Logout</a>
+                            <a href="" id="userLogout">Logout</a>
                             <br />
                             <div id="ctable" class="table-responsive">
                                 <table class="table table-striped table-hover resizable">
@@ -91,14 +91,17 @@ const movie = {
                 e.preventDefault();
             }
             var data = $('#movieModalForm').serialize();
-            console.log(data);
+            console.log(window.localStorage.getItem('access_token'));
             $.ajax({
                 type: 'POST',
                 url: '/api/movie',
                 data: data,
                 headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                        'content'
+                    ),
                     Authorization:
-                        'Bearer ' + window.localStorage.getItem('access_token'),
+                        'Bearer ' + localStorage.getItem('access_token'),
                 },
                 dataType: 'json',
                 success: function (data) {
@@ -119,6 +122,7 @@ const movie = {
         });
 
         $('#createMovieModal').on('hidden.bs.modal', function (e) {
+            console.log($('#createMovieModal'));
             $('#movieModalForm').trigger('reset');
             $('#producer_id').empty();
             $('#genres').empty();
@@ -189,7 +193,6 @@ const movie = {
                     $('#moviePlot').val(data.plot);
                     $('#movieYear').val(data.year);
                     $('#movieProd').val(data.producer_id);
-                    let genre_id = [];
                     data.genres.forEach((element) => {
                         $(`#genre_id${element.genre_id}`).attr('checked', true);
                     });

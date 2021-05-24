@@ -3,12 +3,13 @@ import genre from './genre';
 import movie from './movie';
 import producer from './producer';
 import role from './role';
+
 import registerModal from './registerModal';
 import authAccount from './authAccount';
 import authLogout from './authLogout';
 
 $('#userLogout').on('click', function (e) {
-    //console.log(user);
+    console.log(user);
     $.ajax({
         type: 'POST',
         url: '/api/logout',
@@ -19,6 +20,7 @@ $('#userLogout').on('click', function (e) {
         success: function (data) {
             $('.account').html(authLogout());
             console.log(data);
+            window.localStorage.removeItem('access_token');
         },
         error: function () {
             alert('Failed to logout.. try again');
@@ -117,24 +119,37 @@ $(document).ready(function () {
         var data = $('#loginForm').serialize();
         console.log(data);
         $.ajax({
-            type: 'POST',
-            url: '/api/login',
-            data: data,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-            },
-            dataType: 'json',
-            success: function (data) {
-                console.log('login request sent');
-                console.log(data);
-                $('.account').html(authAccount(data.user.name));
+            url: '/sanctum/csrf-cookie',
+            type: 'GET',
+            success: function (result) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/login',
+                    data: data,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                            'content'
+                        ),
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log('login request sent');
+                        console.log(data);
+                        $('.account').html(authAccount(data.user.name));
 
-                window.localStorage.setItem('access_token', data.access_token);
-                console.log(window.localStorage.getItem('access_token'));
-                console.log($('#logout'));
-            },
-            error: function (data) {
-                alert('Failed to login.. try again');
+                        window.localStorage.setItem(
+                            'access_token',
+                            data.access_token
+                        );
+                        console.log(
+                            window.localStorage.getItem('access_token')
+                        );
+                        console.log($('#logout'));
+                    },
+                    error: function (data) {
+                        alert('Failed to login.. try again');
+                    },
+                });
             },
         });
     });
@@ -180,9 +195,11 @@ $(document).ready(function () {
         });
     });
 
+
+
     $('.link').on('click', (e) => {
         const link = e.currentTarget.dataset.id;
-        $('#content').toggle('fold');
+        $('#content').show('blind');
 
         $.ajax({
             type: 'GET',
@@ -220,4 +237,23 @@ $(document).ready(function () {
             },
         });
     });
+
+    // $.ajax({
+    //     type: 'GET',
+    //     url: 'api/user',
+    //     success: function (result) {
+    //         if (!data) {
+    //             $('.account').html(authAccount(result.name));
+    //             console.log(result);
+    //         }
+    //     },
+    // });
+
+});
+
+$(document).ajaxSend(function (event, jqXHR) {
+    jqXHR.setRequestHeader(
+        'Authorization',
+        'Bearer ' + localStorage.getItem('access_token')
+    );
 });

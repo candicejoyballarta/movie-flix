@@ -26,6 +26,6 @@ class Movie extends Model
 
     public function roles()
     {
-        return $this->hasMany(Role::class, 'role_id', 'movie_id');
+        return $this->hasMany(Role::class, 'movie_id');
     }
 }

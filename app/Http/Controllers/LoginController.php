@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Events\AuthCreated;
 use App\Models\User;
 use Exception;
-use Illuminate\Console\Scheduling\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+
 
 class LoginController extends Controller
 {
@@ -21,11 +22,10 @@ class LoginController extends Controller
             'password'=> bcrypt($request['password'])
         ]);
 
-
-        AuthCreated::dispatch($user);
-        //Event::fire(new AuthCreated($user));
-
-        return response()->json($user);
+        return response()->json([
+            'msg' => 'User Created',
+            'user' => $user
+        ], 200);
     }
 
     public function login(Request $request){
@@ -37,7 +37,7 @@ class LoginController extends Controller
             if(!Auth::attempt($credentials)){
                 return response()->json([
                     'status' => 500,
-                    'message' => 'Unauthorized'
+                    'message' => 'Login Unauthorized'
                 ]);
             }
 
@@ -47,10 +47,14 @@ class LoginController extends Controller
                 throw new \Exception('Error in Login');
             }
 
+            //$request->session()->regenerate();
 
             $tokenResult = $user->createToken('access_token')->plainTextToken;
+
             return response()->json([
-                'user' => auth()->user(),
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
                 'message' => 'success',
                 'status_code' => 200,
                 'access_token' => $tokenResult,
@@ -69,16 +73,48 @@ class LoginController extends Controller
     public function logout(Request $request){
 
         $request->user()->currentAccessToken()->delete();
-        //Auth::guard('web')->logout();
-
-        //Auth::user()->tokens()->where('id', $id)->delete();
-        //Auth::guard('web')->logout();
 
         return response()->json([
             'status_code' => 200,
             'message' => 'user logged out'
         ]);
 
+    }
+
+    public function mLogin(Request $request) {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+            'device_name' => 'required',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+
+        return $user->createToken($request->device_name)->plainTextToken;
+    }
+
+    public function mRegister() {
+
+    request()->validate([
+        'name' => ['required'],
+        'email' => ['required', 'email', 'unique:users,email'],
+        'password' => ['required', 'min:8', 'confirmed'],
+        'device_name' => ['required']
+    ]);
+
+    $user = User::create([
+        'name' => request('name'),
+        'email' => request('email'),
+        'password' => bcrypt(request('password')),
+    ]);
+
+    return $user->createToken(request('device_name'))->plainTextToken;
     }
 
 

@@ -6,6 +6,7 @@ const role = {
                             data-bs-target="#createRoleModal">
                                 Add
                         </button>
+                        <a href="" id="userLogout">Logout</a>
                         <br />
                         <div id="ctable" class="table-responsive">
                             <table class="table table-striped table-hover  resizable">
@@ -76,6 +77,13 @@ const role = {
             $.ajax({
                 type: 'GET',
                 url: '/api/actor/all',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                        'content'
+                    ),
+                    Authorization:
+                        'Bearer ' + localStorage.getItem('access_token'),
+                },
                 success(response) {
                     response.forEach((element) => {
                         $('#actor_id').append(`

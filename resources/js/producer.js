@@ -6,7 +6,7 @@ const producer = {
                             data-bs-target="#createProducerModal">
                                 Add
                         </button>
-                        <a href="">Logout</a>
+                        <a href="" id="userLogout">Logout</a>
                         <br />
                         <div id="ctable" class="table-responsive">
                             <table class="table table-striped table-hover  resizable">
@@ -95,6 +95,8 @@ const producer = {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
                         'content'
                     ),
+                    'Authorization':
+                        'Bearer ' + localStorage.getItem('access_token'),
                 },
                 dataType: 'json',
                 success: function (data) {

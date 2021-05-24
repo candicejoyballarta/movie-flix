@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <a class="navbar-brand" href="#">
             <img src="/images/logo.png" alt="" width="50" height="40" class="d-inline-block">
-            Movie-flix.
+            Movie-flix
         </a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
@@ -48,8 +48,6 @@
                             <a class="dropdown-item" href="#" id="register" data-bs-toggle="modal"
                                 data-bs-target="#registerModal">New
                                 around here? Sign up</a>
-                            <a class="dropdown-item" href="#" id="login" data-bs-toggle="modal"
-                                data-bs-target="#loginModal">Login</a>
                         </div>
                     </li>
                 </ul>

@@ -5,9 +5,32 @@ namespace App\Http\Controllers;
 use App\Models\Movie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class MovieController extends Controller
 {
+
+    protected $rules = [
+        'title' => 'required|min:3|max:45',
+        'plot' => 'required|min:3|max:350',
+        'year' => 'required|min:4|numeric',
+        'producer_id' => 'required'
+    ];
+
+    protected $messages = [
+        'title.required' => 'Movie title required',
+        'title.min' => 'Name should at least be 3 char long',
+        'title.max' => 'Only 45 char long',
+        'plot.required' => 'Movie title required',
+        'plot.min' => 'Plot should at least be 3 char long',
+        'plot.max' => 'Only 350 char long',
+        'year.required' => 'year required',
+        'year.numeric' => 'must be numeric',
+        'year.min' => 'must be a valid year',
+        'movie_image.image' => 'must upload valid movie poster',
+        'producer_id.required' => 'Producer required',
+    ];
 
     public function getMovieAll(){
         //if ($request->ajax()){
@@ -39,7 +62,10 @@ class MovieController extends Controller
      */
     public function index()
     {
-        return Movie::all();
+        return response()->json([
+            'movies' => Movie::with(['producers', 'genres', 'roles.actors'])->orderBy('created_at')->get()
+        ], 200);
+
     }
 
     /**
@@ -60,13 +86,32 @@ class MovieController extends Controller
      */
     public function store(Request $request)
     {
-        $movie = Movie::create($request->all());
+
+        $validData = $request->validate($this->rules);
+
+        $movie = new Movie;
+        $movie->title = $validData['title'];
+        $movie->plot = $validData['plot'];
+        $movie->year = $validData['year'];
+        $movie->movie_image = 'storage/images/'.$validData['title'].time().'.jpg';
+        $movie->producers()->associate($validData['producer_id']);
+        $movie->save();
 
         foreach ($request->genre_id as $genre_id) {
             DB::insert('insert into genre_movie (genre_id, movie_id) values (?, ?)', [$genre_id, $movie->movie_id]);
         }
 
-        return response()->json($movie);
+        foreach ($request->actor_id as $actor_id) {
+            DB::insert('insert into roles (actor_id, movie_id) values (?, ?)', [$actor_id, $movie->movie_id]);
+        }
+
+        Storage::put('public/images/'.$validData['title'].time().'.jpg', base64_decode($request['movie_image']));
+
+        Log::info('Movie CREATED: ', ['movie_id' => $movie->movie_id, 'title' => $movie->title]);
+
+        return response()->json([
+            'msg' => 'Movie Created'
+        ], 201);
     }
 
     /**
@@ -104,11 +149,52 @@ class MovieController extends Controller
      * @param  \App\Models\Movie  $movie
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Movie $movie)
     {
-        //if ($request->ajax()) {
-            $movie = Movie::find($id)->update($request->all());
-            return response()->json($movie);
+
+        $validData = $request->validate($this->rules);
+        $genre_ids = $request->genre_id;
+        $actor_ids = $request->actor_id;
+
+        if(empty($genre_ids)){
+            DB::table('genre_movie')->where('movie_id',$movie->movie_id)->delete();
+        } else {
+            foreach($genre_ids as $genre_id) {
+                DB::table('genre_movie')->where('movie_id',$movie->movie_id)->delete();
+            }
+            foreach($genre_ids as $genre_id) {
+                DB::table('genre_movie')->insert(['genre_id' => $genre_id, 'movie_id' => $movie->movie_id]);
+            }
+        }
+
+        if(empty($actor_ids)){
+            DB::table('roles')->where('movie_id',$movie->movie_id)->delete();
+        } else {
+            foreach($actor_ids as $actor_id) {
+                DB::table('roles')->where(['movie_id' => $movie->movie_id, 'actor_id' => $actor_id])->delete();
+            }
+            foreach($actor_ids as $actor_id) {
+                DB::table('roles')->insert(['actor_id' => $actor_id, 'movie_id' => $movie->movie_id]);
+            }
+        }
+
+        $movie->title = $validData['title'];
+        $movie->plot = $validData['plot'];
+        $movie->year = $validData['year'];
+        $movie->producer_id = $validData['producer_id'];
+        if($request->movie_image != ""){
+            $movie->movie_image = 'storage/images/'.$validData['title'].time().'.jpg';
+            Storage::put('public/images/'.$validData['title'].time().'.jpg', base64_decode($request->movie_image));
+        }
+        $movie->save();
+
+
+
+        Log::notice('Movie UPDATE: ', ['movie_id' => $movie->movie_id, 'title' => $movie->title]);
+
+        return response()->json([
+            "msg" => "Movie Updated"
+        ], 200);
         //}
     }
 
@@ -118,10 +204,16 @@ class MovieController extends Controller
      * @param  \App\Models\Movie  $movie
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Movie $movie)
     {
-        $movie = Movie::findOrFail($id);
         $movie->delete();
-        return response()->json(['success'=>"movie deleted successfully",'data'=>$movie,'status'=>200]);
+
+        Log::warning('Movie DELETED: ', [
+            'movie_id' => $movie->movie_id, 'title' => $movie->title
+        ]);
+
+        return response()->json([
+            'msg'=>"Movie Deleted"
+        ], 202);
     }
 }
